@@ -11,6 +11,9 @@ import removeConsole from "vite-plugin-remove-console";
 import themePreprocessorPlugin from "@pureadmin/theme";
 import DefineOptions from "unplugin-vue-define-options/vite";
 import { genScssMultipleScopeVars } from "../src/layout/theme";
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import AutoImport from "unplugin-auto-import/vite";
 
 export function getPluginsList(
   command: string,
@@ -23,6 +26,28 @@ export function getPluginsList(
     vue(),
     // jsx、tsx语法支持
     vueJsx(),
+    Components({
+      dts: true, // 为了获得对自动导入组件的ts支持
+      dirs: ["src/components"], // 用于搜索组件目录的相对路径
+      types: [
+        {
+          from: "vue-router",
+          names: ["RouterLink", "RouterView"]
+        }
+      ], // 全局注册的组件，插件无需导入，对ts不友好，所以需要手动注册它们的类型
+      resolvers: [ElementPlusResolver()] // 导入组件库解析器
+    }),
+    AutoImport({
+      dts: true,
+      imports: ["vue", "vue-router"],
+      // 可以选择auto-import.d.ts生成的位置，使用ts建议设置为'src/auto-import.d.ts'
+      // dts: 'src/auto-import.d.ts'
+      eslintrc: {
+        // 生成eslint的配置文件，需要在eslint配置中导入
+        enabled: true, // Default `false`
+        globalsPropValue: "readonly" // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
+      }
+    }),
     VITE_CDN ? cdn : null,
     configCompressPlugin(VITE_COMPRESSION),
     DefineOptions(),

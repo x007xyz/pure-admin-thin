@@ -37,7 +37,8 @@ module.exports = {
     "eslint:recommended",
     "@vue/typescript/recommended",
     "@vue/prettier",
-    "@vue/eslint-config-typescript"
+    "@vue/eslint-config-typescript",
+    "./.eslintrc-auto-import.json"
   ],
   parser: "vue-eslint-parser",
   parserOptions: {
